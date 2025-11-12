@@ -1,0 +1,67 @@
+                identity = x
+                if first:
+                    stats_x.append([])
+                    stats_y.append([])
+                    stats_xy.append([])
+                    weights.append([])
+
+                y = m.conv1(x)
+                mask = mask_fn(y).float().to(device)
+                if m.conv1.bias is not None:
+                    y_wo_bias = y - m.conv1.bias.view(-1, 1, 1)
+                else:
+                    y_wo_bias = y.clone()
+                cnt_, cnt_all_, x_, y_, xy_, w, w_fn = _prod(m.conv1, x, y_wo_bias, mask)
+                if first:
+                    stats_x[i].append(RunningMean(x_.shape, device))
+                    stats_y[i].append(RunningMean(y_.shape, device))  # Use all y
+                    stats_xy[i].append(RunningMean(xy_.shape, device))
+                    weights[i].append((w, w_fn))
+                stats_x[i][0].update(x_, cnt_)
+                stats_y[i][0].update(y_.sum(0), cnt_all_)
+                stats_xy[i][0].update(xy_, cnt_)
+
+                x1 = y.clone()
+                x1 = m.bn1(x1)
+                x1 = m.relu(x1)
+
+                y = m.conv2(x1)
+                mask = mask_fn(y).float().to(device)
+                if m.conv2.bias is not None:
+                    y_wo_bias = y - m.conv2.bias.view(-1, 1, 1)
+                else:
+                    y_wo_bias = y.clone()
+                cnt_, cnt_all_, x_, y_, xy_, w, w_fn = _prod(m.conv2, x1, y_wo_bias, mask)
+                if first:
+                    stats_x[i].append(RunningMean(x_.shape, device))
+                    stats_y[i].append(RunningMean(y_.shape, device))  # Use all y
+                    stats_xy[i].append(RunningMean(xy_.shape, device))
+                    weights[i].append((w, w_fn))
+                stats_x[i][1].update(x_, cnt_)
+                stats_y[i][1].update(y_.sum(0), cnt_all_)
+                stats_xy[i][1].update(xy_, cnt_)
+
+                y = m.bn2(y)
+
+                if m.downsample is not None:
+                    identity = m.downsample[0](x)
+                    mask = mask_fn(identity).float().to(device)
+                    if m.downsample[0].bias is not None:
+                        y_wo_bias = y - m.downsample[0].bias.view(-1, 1, 1)
+                    else:
+                        y_wo_bias = y.clone()
+                    cnt_, cnt_all_, x_, y_, xy_, w, w_fn = _prod(m.downsample[0], x, y_wo_bias, mask)
+                    if first:
+                        stats_x[i].append(RunningMean(x_.shape, device))
+                        stats_y[i].append(RunningMean(y_.shape, device))  # Use all y
+                        stats_xy[i].append(RunningMean(xy_.shape, device))
+                        weights[i].append((w, w_fn))
+                    stats_x[i][2].update(x_, cnt_)
+                    stats_y[i][2].update(y_.sum(0), cnt_all_)
+                    stats_xy[i][2].update(xy_, cnt_)
+                    identity = m.downsample[1](identity)
+
+                y += identity
+                x = m.relu(y)
+                i += 1
+                continue

@@ -1,0 +1,63 @@
+device: 'cuda'
+g: [0]
+checkpoint_save:
+pin_memory: true
+log:
+acc_map_save:
+dataset_path: '../data'
+dataset: 'cifar10'
+batch_size: 128
+num_workers: 4
+
+model: 'preactresnet'
+layers: 18
+model_all: 'preactresnet18'
+random_seed: 0
+width_mult: 1
+depth_mult: 1
+model_mult: 0
+
+result_file: badnet_cifar10_preactresnet18/badnet_all2one_pr0.1/
+
+attack: true
+ratio: 0.1
+index:
+MODEL_ACC: 0.90
+sample_r: 0.1
+sample_f: 5
+
+# defense parameters
+mode_type: 'normal' #'normal','Ablation2','normal'
+runtype: 'train'  # "train","evaluate"
+# train
+save: 'ckpt.pth'
+pruner: 'dcil'
+prune_freq: 30 #update frequency
+prune_imp: 'L1' #L1, L2, grad, syn
+initial_cov_rate: 0.8
+final_cov_rate: 1
+cu_num: 1
+
+first_epoch: 15
+warmup_loss: 15
+target_epoch: 50
+
+print_freq: 16
+txt_name_tarin: 16
+text_name_test: 16
+lr: 0.01
+weight_decay: 5e-4
+nesterov: True
+gamma: 0.1
+scheduler: 'step'
+step_size: 20
+milestones: [30, 50]
+warmup-lr: 0.01
+warmup_lr_epoch: 30
+momentum: 0.9
+# evalute
+amp: True
+print_every: 10
+frequency_save: 1
+prefetch: False
+non_blocking: True
