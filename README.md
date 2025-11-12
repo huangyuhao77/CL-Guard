@@ -1,6 +1,6 @@
 # [CL-Guard: Defending DNNs Against Backdoors via Fine-Grained Neuron Analysis and Collaborative Dual-Network Learning]
 
-This repository contains the official implementation of the paper **"CL-Guard: Defending DNNs Against Backdoors via Fine-Grained Neuron Analysis and Collaborative Dual-Network Learning"**, submitted to AAAI 2026.
+This repository contains the official implementation of the paper **"CL-Guard: Defending DNNs Against Backdoors via Fine-Grained Neuron Analysis and Collaborative Dual-Network Learning"**, submitted to AAAI 2026.The content of the appendix of the paper can be found in "appendix submission version.pdf".
 
 ---
 
